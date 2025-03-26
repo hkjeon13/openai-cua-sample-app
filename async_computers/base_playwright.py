@@ -2,7 +2,6 @@ import time
 import base64
 from typing import List, Dict, Literal
 from playwright.async_api import async_playwright, Browser, Page
-from sqlalchemy.util import await_only
 
 from utils import check_blocklisted_url
 import asyncio
@@ -56,7 +55,7 @@ class AsyncBasePlaywrightComputer:
         self._page: Page | None = None
 
     async def __aenter__(self):
-        self._playwright = async_playwright().start()
+        self._playwright = await async_playwright().start()
         self._browser, self._page = await self._get_browser_and_page()
 
         # Set up network interception to flag URLs matching domains in BLOCKED_DOMAINS

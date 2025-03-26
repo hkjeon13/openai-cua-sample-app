@@ -47,7 +47,7 @@ class AsyncAgent:
         if self.debug:
             pp(*args)
 
-    def handle_item(self, item):
+    async def handle_item(self, item):
         """Handle each item; may cause a computer action + screenshot."""
         if item["type"] == "message":
             if self.print_steps:
@@ -79,7 +79,7 @@ class AsyncAgent:
             method = getattr(self.computer, action_type)
             method(**action_args)
 
-            screenshot_base64 = self.computer.screenshot()
+            screenshot_base64 = await self.computer.screenshot()
             if self.show_images:
                 show_image(screenshot_base64)
 
@@ -127,7 +127,7 @@ class AsyncAgent:
             self.debug_print([sanitize_message(msg) for msg in input_items + new_items])
 
             response = await self.model(
-                input=input_items + new_items,
+                inputs=input_items + new_items,
                 tools=self.tools
             )
 

@@ -1,42 +1,42 @@
 from playwright.sync_api import Browser, Page
-from .base_playwright import BasePlaywrightComputer
+from .base_playwright import AsyncBasePlaywrightComputer
 
 
-class LocalPlaywrightComputer(BasePlaywrightComputer):
+class LocalPlaywrightComputer(AsyncBasePlaywrightComputer):
     """Launches a local Chromium instance using Playwright."""
 
     def __init__(self, headless: bool = False):
         super().__init__()
         self.headless = headless
 
-    def _get_browser_and_page(self) -> tuple[Browser, Page]:
+    async def _get_browser_and_page(self) -> tuple[Browser, Page]:
         width, height = self.dimensions
         launch_args = [f"--window-size={width},{height}", "--disable-extensions", "--disable-file-system"]
-        browser = self._playwright.chromium.launch(
+        browser = await self._playwright.chromium.launch(
             chromium_sandbox=True,
             headless=self.headless,
             args=launch_args,
             env={"DISPLAY": ":0"}
         )
         
-        context = browser.new_context()
+        context = await browser.new_context()
         
         # Add event listeners for page creation and closure
         context.on("page", self._handle_new_page)
         
-        page = context.new_page()
+        page = await context.new_page()
         page.set_viewport_size({"width": width, "height": height})
         page.on("close", self._handle_page_close)
 
-        page.goto("https://bing.com")
+        await page.goto("https://bing.com")
         
         return browser, page
         
-    def _handle_new_page(self, page: Page):
+    async def _handle_new_page(self, page: Page):
         """Handle the creation of a new page."""
         print("New page created")
         self._page = page
-        page.on("close", self._handle_page_close)
+        await page.on("close", self._handle_page_close)
         
     def _handle_page_close(self, page: Page):
         """Handle the closure of a page."""

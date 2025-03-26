@@ -1,7 +1,7 @@
 import os
 from typing import Tuple, Dict, List, Union, Optional
 from playwright.sync_api import Browser, Page, BrowserContext, Error as PlaywrightError
-from .base_playwright import BasePlaywrightComputer
+from .base_playwright import AsyncBasePlaywrightComputer
 from browserbase import Browserbase
 from dotenv import load_dotenv
 import base64
@@ -9,7 +9,7 @@ import base64
 load_dotenv()
 
 
-class BrowserbaseBrowser(BasePlaywrightComputer):
+class BrowserbaseBrowser(AsyncBasePlaywrightComputer):
     """
     Browserbase is a headless browser platform that offers a remote browser API. You can use it to control thousands of browsers from anywhere.
     You can find more information about Browserbase at https://www.browserbase.com/computer-use or view our OpenAI CUA Quickstart at https://docs.browserbase.com/integrations/openai-cua/introduction.
