@@ -1,11 +1,13 @@
 import argparse
 import asyncio
-
+import dotenv
 from agent.async_agent import AsyncAgent
 from computers import LocalPlaywrightComputer
 import openai
 import typing
+import os
 
+dotenv.load_dotenv()
 
 class AsyncOpenAiModel:
     def __init__(self, api_key: str):
@@ -27,7 +29,7 @@ class AsyncOpenAiModel:
 
 
 async def main(args:argparse.Namespace):
-    model = AsyncOpenAiModel(api_key=args.api_key)
+    model = AsyncOpenAiModel(api_key=os.getenv("OPENAI_API_KEY"))
 
     with LocalPlaywrightComputer() as computer:
         agent = AsyncAgent(computer=computer, model=model)
@@ -38,6 +40,5 @@ async def main(args:argparse.Namespace):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--api_key", type=str, required=True)
     parser.add_argument("--query", type=str, default="How do you think about the climate change?")
     asyncio.run(main(parser.parse_args()))
