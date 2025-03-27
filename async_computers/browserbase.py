@@ -1,8 +1,8 @@
 import os
 from typing import Tuple, Dict, List, Union, Optional
-from playwright.sync_api import Browser, Page, BrowserContext, Error as PlaywrightError
+from playwright.async_api import Browser, Page, Error as PlaywrightError, BrowserContext
 from .base_playwright import AsyncBasePlaywrightComputer
-from browserbase import Browserbase
+from browserbase import Browserbase, AsyncBrowserbase
 from dotenv import load_dotenv
 import base64
 
@@ -39,7 +39,7 @@ class BrowserbaseBrowser(AsyncBasePlaywrightComputer):
             ad_blocker (bool): Whether to enable the built-in ad blocker. Default is False.
         """
         super().__init__()
-        self.bb = Browserbase(api_key=os.getenv("BROWSERBASE_API_KEY"))
+        self.bb = AsyncBrowserbase(api_key=os.getenv("BROWSERBASE_API_KEY"))
         self.project_id = os.getenv("BROWSERBASE_PROJECT_ID")
         self.session = None
         self.dimensions = (width, height)
