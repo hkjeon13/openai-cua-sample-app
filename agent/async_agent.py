@@ -77,7 +77,7 @@ class AsyncAgent:
                 print(f"{action_type}({action_args})")
 
             method = getattr(self.computer, action_type)
-            method(**action_args)
+            await method(**action_args)
 
             screenshot_base64 = await self.computer.screenshot()
             if self.show_images:
@@ -125,11 +125,13 @@ class AsyncAgent:
             if num_turns >= max_turns:
                 break
             self.debug_print([sanitize_message(msg) for msg in input_items + new_items])
-
+            targets = input_items + new_items
             response = await self.model(
-                inputs=input_items + new_items,
+                inputs=targets,
                 tools=self.tools
             )
+            with open("response.json", "w", encoding="utf-8") as f:
+                json.dump(new_items, f)
 
             self.debug_print(response)
 
@@ -139,7 +141,8 @@ class AsyncAgent:
             else:
                 new_items += response["output"]
                 for item in response["output"]:
-                    new_items += self.handle_item(item)
+                    output_items = await self.handle_item(item)
+                    new_items += output_items
 
             num_turns += 1
 

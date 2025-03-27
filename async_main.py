@@ -1,5 +1,7 @@
 import argparse
 import asyncio
+
+import aiohttp
 import dotenv
 from agent.async_agent import AsyncAgent
 from async_computers import LocalPlaywrightComputer
@@ -19,9 +21,9 @@ class AsyncOpenAiModel:
         self,
         inputs: typing.List[typing.Dict],
         tools: typing.List[typing.Dict[str, typing.Any]],
-        model: str = "computer-use-preview"  # Updated to a chat model
+        model: str = "computer-use-preview-2025-03-11"  # Updated to a chat model
     ) -> typing.Any:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(300)) as client:
             response = await client.post(
                 "https://api.openai.com/v1/responses",
                 headers={
@@ -35,7 +37,7 @@ class AsyncOpenAiModel:
                     "truncation": "auto",
                 },
             )
-            print("##RAW: ",response.text)
+            print(response.text)
             response.raise_for_status()
         return response.json()
 
@@ -46,11 +48,11 @@ async def main(args:argparse.Namespace):
     async with LocalPlaywrightComputer() as computer:
         agent = AsyncAgent(computer=computer, model=model)
         query = [{"role": "user", "content": args.query}]
-        output_items = await agent.run_full_turn(query)
+        output_items = await agent.run_full_turn(query, debug=True)
 
     print(output_items)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--query", type=str, default="Collect the youtube video titles of the latest videos from the channel 'OpenAI'")
+    parser.add_argument("--query", type=str, default="Collect the news headline for the D.Trump")
     asyncio.run(main(parser.parse_args()))

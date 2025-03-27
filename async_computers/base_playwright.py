@@ -59,14 +59,14 @@ class AsyncBasePlaywrightComputer:
         self._browser, self._page = await self._get_browser_and_page()
 
         # Set up network interception to flag URLs matching domains in BLOCKED_DOMAINS
-        def handle_route(route, request):
+        async def handle_route(route, request):
 
             url = request.url
             if check_blocklisted_url(url):
                 print(f"Flagging blocked domain: {url}")
-                route.abort()
+                await route.abort()
             else:
-                route.continue_()
+                await route.continue_()
 
         await self._page.route("**/*", handle_route)
 

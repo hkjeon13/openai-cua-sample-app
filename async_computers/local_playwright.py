@@ -25,7 +25,7 @@ class LocalPlaywrightComputer(AsyncBasePlaywrightComputer):
         context.on("page", self._handle_new_page)
         
         page = await context.new_page()
-        page.set_viewport_size({"width": width, "height": height})
+        await page.set_viewport_size({"width": width, "height": height})
         page.on("close", self._handle_page_close)
 
         await page.goto("https://bing.com")
@@ -36,7 +36,7 @@ class LocalPlaywrightComputer(AsyncBasePlaywrightComputer):
         """Handle the creation of a new page."""
         print("New page created")
         self._page = page
-        await page.on("close", self._handle_page_close)
+        page.on("close", self._handle_page_close)
         
     def _handle_page_close(self, page: Page):
         """Handle the closure of a page."""
